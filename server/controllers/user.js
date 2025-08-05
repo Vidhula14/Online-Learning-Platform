@@ -3,7 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sendMail from "../middlewares/sendMail.js";
 import TryCatch from "../middlewares/tryCatch.js";
-import { use } from "bcrypt/promises.js";
+// import { use } from "bcrypt/promises.js"; // This import seems unused and can be removed
+
 export const register = TryCatch(async (req, res) => {
   const { name, email, password } = req.body;
   let user = await User.findOne({ email });
@@ -36,28 +37,38 @@ export const register = TryCatch(async (req, res) => {
     activationToken,
   });
 });
+
 export const verifyUser = TryCatch(async (req, res) => {
   const { otp, activationToken } = req.body;
+
+  // Convert the OTP from string to number for comparison
+  const submittedOtpAsNumber = Number(otp); // <--- ADDED THIS LINE
+
   const verify = jwt.verify(activationToken, process.env.Activation_Secret);
   if (!verify) {
     return res.status(400).json({
       message: "Otp expired",
     });
   }
-  if (verify.otp !== otp) {
+
+  // Compare the numeric OTP from the token with the numeric submitted OTP
+  if (verify.otp !== submittedOtpAsNumber) { // <--- MODIFIED THIS LINE
     return res.status(400).json({
       message: "Wrong Otp",
     });
   }
+
   await User.create({
     name: verify.user.name,
     email: verify.user.email,
     password: verify.user.password,
   });
+
   res.json({
     message: "user registered",
   });
 });
+
 export const login = TryCatch(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -81,6 +92,7 @@ export const login = TryCatch(async (req, res) => {
     user,
   });
 });
+
 export const myProfile = TryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
   res.json({ user });

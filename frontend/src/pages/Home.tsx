@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaChalkboardTeacher, FaLaptopCode, FaCertificate, FaUsers, FaStar } from 'react-icons/fa';
-
+import React from 'react';
 const featuredCourses = [
   {
     id: 1,

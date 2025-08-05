@@ -1,13 +1,26 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { createTransport } from "nodemailer";
-const sendMail = async (email, subjet, data) => {
+
+const sendMail = async (email, subject, data) => {
   const transport = createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false,
     auth: {
-      user: process.env.Gmail,
-      pass: process.env.Password,
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
+    // ADD THIS LINE FOR DEBUGGING:
+    logger: true, // This will print detailed logs to the console
+    debug: true, // This enables even more verbose debugging
   });
+
+  console.log("EMAIL_HOST:", process.env.EMAIL_HOST, "EMAIL_PORT:", process.env.EMAIL_PORT);
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,7 +53,7 @@ const sendMail = async (email, subjet, data) => {
         }
         .otp {
             font-size: 36px;
-            color: #7b68ee; /* Purple text */
+            color: #7b68ee;
             margin-bottom: 30px;
         }
     </style>
@@ -49,16 +62,25 @@ const sendMail = async (email, subjet, data) => {
     <div class="container">
         <h1>OTP Verification</h1>
         <p>Hello ${data.name} your (One-Time Password) for your account verification is.</p>
-        <p class="otp">${data.otp}</p> 
+        <p class="otp">${data.otp}</p>
     </div>
 </body>
 </html>
 `;
-  await transport.sendMail({
-    from: process.env.Gmail,
-    to: email,
-    subjet,
-    html,
-  });
+
+  try {
+    await transport.sendMail({
+      from: `"Online Learning" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject,
+      html,
+    });
+    console.log("Email sent successfully!");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    // Log the full error object for more details
+    console.error("Full error object:", JSON.stringify(error, null, 2));
+  }
 };
+
 export default sendMail;

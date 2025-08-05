@@ -8,6 +8,8 @@ export const instance = new Razorpay({
   key_id: process.env.Razorpay_Key,
   key_secret: process.env.Razorpay_Secret,
 });
+console.log("Email Host:", process.env.EMAIL_HOST," Email Port:", process.env.EMAIL_PORT,"Email User:", process.env.EMAIL_USER," Email Pass:", process.env.EMAIL_PASS);
+
 const app = express();
 //using middlewares
 app.use(express.json());

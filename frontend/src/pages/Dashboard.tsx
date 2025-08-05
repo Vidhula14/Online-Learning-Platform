@@ -25,15 +25,35 @@ interface UserStats {
 }
 
 const Dashboard = () => {
-  const { data: courses, isLoading: coursesLoading } = useQuery<Course[]>({
+  const token = localStorage.getItem("token");
+
+  const { data: coursesData, isLoading: coursesLoading } = useQuery({
     queryKey: ['enrolledCourses'],
-    queryFn: () => axios.get('/api/courses/enrolled').then(res => res.data),
+    queryFn: () =>
+      axios
+        .get('/api/mycourse', {
+          headers: { token }
+        })
+        .then(res => res.data),
   });
 
+  // If you don't have a /api/user/stats endpoint, comment this out or implement it in the backend
   const { data: stats, isLoading: statsLoading } = useQuery<UserStats>({
     queryKey: ['userStats'],
-    queryFn: () => axios.get('/api/user/stats').then(res => res.data),
+    queryFn: () =>
+      axios
+        .get('/api/user/stats', {
+          headers: { token }
+        })
+        .then(res => res.data),
   });
+
+  // Ensure courses is always an array
+  const courses = Array.isArray(coursesData)
+    ? coursesData
+    : Array.isArray(coursesData?.courses)
+      ? coursesData.courses
+      : [];
 
   if (coursesLoading || statsLoading) {
     return (
@@ -135,7 +155,7 @@ const Dashboard = () => {
             </Link>
           </div>
 
-          {courses && courses.length > 0 ? (
+          {courses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((course) => (
                 <div key={course.id} className="bg-white rounded-lg shadow overflow-hidden">
@@ -208,7 +228,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activity</h2>
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="divide-y divide-gray-200">
-              {courses?.slice(0, 5).map((course) => (
+              {courses.slice(0, 5).map((course) => (
                 <div key={course.id} className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -243,4 +263,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
