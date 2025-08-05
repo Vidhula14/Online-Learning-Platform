@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -17,6 +20,11 @@ const Navbar = () => {
     { name: 'Login', path: '/login' },
     { name: 'Register', path: '/register' },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <nav className="bg-white shadow-md">
@@ -47,19 +55,26 @@ const Navbar = () => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            {authLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`${
-                  link.name === 'Register'
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    : 'text-indigo-600 hover:text-indigo-700'
-                } px-4 py-2 rounded-md text-sm font-medium transition-colors`}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {user ? (
+              <>
+                <Link to="/dashboard">Dashboard</Link>
+                <button onClick={handleLogout}>Logout</button>
+              </>
+            ) : (
+              authLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`${
+                    link.name === 'Register'
+                      ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      : 'text-indigo-600 hover:text-indigo-700'
+                  } px-4 py-2 rounded-md text-sm font-medium transition-colors`}
+                >
+                  {link.name}
+                </Link>
+              ))
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -96,20 +111,27 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            {authLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`${
-                  link.name === 'Register'
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    : 'text-indigo-600 hover:text-indigo-700'
-                } block px-3 py-2 rounded-md text-base font-medium`}
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {user ? (
+              <>
+                <Link to="/dashboard">Dashboard</Link>
+                <button onClick={handleLogout}>Logout</button>
+              </>
+            ) : (
+              authLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`${
+                    link.name === 'Register'
+                      ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      : 'text-indigo-600 hover:text-indigo-700'
+                  } block px-3 py-2 rounded-md text-base font-medium`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -117,4 +139,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

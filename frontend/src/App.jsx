@@ -12,6 +12,7 @@ import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import { AuthProvider } from './context/AuthContext';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -19,43 +20,45 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <Layout>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/courses/:id" element={<CourseDetails />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
+      <AuthProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:id" element={<CourseDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
 
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={<Dashboard />} />
+              {/* Protected Routes */}
+              <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* Fallback Route */}
-            <Route path="*" element={
-              <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-                <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                  <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-                    <p className="text-lg text-gray-600 mb-8">Page not found</p>
-                    <a
-                      href="/"
-                      className="text-indigo-600 hover:text-indigo-500 font-medium"
-                    >
-                      Return to home
-                    </a>
+              {/* Fallback Route */}
+              <Route path="*" element={
+                <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                  <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                    <div className="text-center">
+                      <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
+                      <p className="text-lg text-gray-600 mb-8">Page not found</p>
+                      <a
+                        href="/"
+                        className="text-indigo-600 hover:text-indigo-500 font-medium"
+                      >
+                        Return to home
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            } />
-          </Routes>
-        </Layout>
-      </Router>
+              } />
+            </Routes>
+          </Layout>
+        </Router>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
